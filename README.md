@@ -1,5 +1,7 @@
 # 🏓 ping-pong-game
-This is a beginner game
+- This is a beginner game, a 2D game with simple ball and paddles.
+- Simple yet addictive, interesting and smooth.
+- Creation of this game really tested the clases, inheritance, coding and problem solving challenges.
 
 ---
 
