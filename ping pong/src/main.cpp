@@ -67,10 +67,10 @@ class Paddle{
     }
 
     void Update(){
-        if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
+        if(IsKeyDown(KEY_UP)){
             y = y - speed;
         }
-        else if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
+        else if(IsKeyDown(KEY_DOWN)){
             y = y + speed;
         }
 
@@ -80,11 +80,11 @@ class Paddle{
 
 class CpuPaddle: public Paddle{
     public:
-    void Update(int ball_y){
-        if(y + height/2 > ball_y){
+    void Update(){
+        if(IsKeyDown(KEY_W)){
             y = y - speed;
         }
-        if(y + height/2 <= ball_y){
+        else if(IsKeyDown(KEY_S)){
             y = y + speed;
         }
 
@@ -108,30 +108,33 @@ int main(){
     ball.radius = 20;
     ball.x = screen_width/2;
     ball.y = screen_height/2;
-    ball.speed_x = 7;
-    ball.speed_y = 7;
+    ball.speed_x = 10;
+    ball.speed_y = 10;
 
     player.width = 25;
     player.height = 120;
     player.x = screen_width - player.width -10;
     player.y = screen_height/2 - player.height/2;
-    player.speed = 7;
+    player.speed = 15;
 
     cpu.height = 120;
     cpu.width = 25;
     cpu.x = 10;
     cpu.y = screen_height/2 - cpu.height/2;
-    cpu.speed=6;
+    cpu.speed=15;
 
 
     while(WindowShouldClose() == false){
+        bool gamePaused = (cpu_score == 10 || player_score == 10);
         BeginDrawing();
 
 
         //Updating
-        ball.Update();
-        player.Update();
-        cpu.Update(ball.y);
+        if(!gamePaused){
+            ball.Update();
+            player.Update();
+            cpu.Update();
+        }
 
         //Checking for collisions
         if(CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius, Rectangle{player.x, player.y, player.width, player.height})){
@@ -152,10 +155,27 @@ int main(){
         player.Draw();
         DrawText(TextFormat("%i",cpu_score), screen_width/4-20 , 20, 80, WHITE);
         DrawText(TextFormat("%i",player_score), 3 * screen_width/4-20 , 20, 80, WHITE);
+
+        if(IsKeyPressed(KEY_SPACE) && gamePaused){
+            player_score = 0;
+            cpu_score = 0;
+            ball.ResetBall();
+            gamePaused = false;
+        }
+
+        if(cpu_score == 10){
+            DrawText("Blue Wins!!", screen_width/2 - 180, 60, 80, WHITE);
+            DrawText("SPACE to restart", screen_width/2-300, screen_height/2 + 40, 70, BLACK);
+        }
+        else if(player_score == 10){
+            DrawText("Red Wins!!", screen_width/2 - 160, 60, 80, WHITE);
+            DrawText("SPACE to restart", screen_width/2-300, screen_height/2 + 40, 70, BLACK);
+        }
         
         EndDrawing();
     }
 
+    std::cout << "Game Over, Thanks for playing :)\n";
 
     CloseWindow();
     return 0;
